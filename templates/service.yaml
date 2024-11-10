@@ -12,6 +12,7 @@ spec:
   ports:
     - port: {{ .Values.service.port }}
       targetPort: http
+      nodePort: {{ .Values.service.nodePort | default "null" }}
   selector:
     app: {{ include "wordpress.name" . }}
     release: {{ .Release.Name }}

@@ -20,20 +20,12 @@ serviceAccount:
   annotations: {}
   name: ''
 
-# WordPress specific configurations
-wordpressUsername: admin
-wordpressPassword: admin_password  # Change this to a secure password
-wordpressEmail: admin@example.com
-wordpressFirstName: First
-wordpressLastName: Last
-wordpressBlogName: My Blog
-
 # Database configurations
 mariadb:
   enabled: true
   persistence:
     enabled: true
-    storageClass: "standard" # Replace with your storage class if different
+    storageClass: "local-path"
     accessMode: ReadWriteOnce
     size: 1Gi
   db:
@@ -45,15 +37,7 @@ mariadb:
 service:
   type: NodePort
   port: 80
-  nodePort: 30080
-
-ingress:
-  enabled: false
-  annotations: {}
-  hosts:
-    - host: chart-example.local
-      paths: []
-  tls: []
+  nodePort: 32000
 
 resources: {}
 nodeSelector: {}
