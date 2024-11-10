@@ -1,0 +1,45 @@
+# Default values for wordpress.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+replicaCount: 1
+
+image:
+  repository: wordpress
+  pullPolicy: IfNotPresent
+  tag: 'latest'  # Set the desired WordPress image tag
+
+imagePullSecrets: []
+
+nameOverride: ''
+fullnameOverride: ''
+
+serviceAccount:
+  create: true
+  automount: true
+  annotations: {}
+  name: ''
+
+# Database configurations
+mariadb:
+  enabled: true
+  persistence:
+    enabled: true
+    storageClass: "local-path"
+    accessMode: ReadWriteOnce
+    size: 1Gi
+  db:
+    name: wordpress
+    user: wordpress
+    password: wordpress_password  # Change this to a secure password
+    rootPassword: root_password  # Change this to a secure password
+
+service:
+  type: NodePort
+  port: 80
+  nodePort: 32000
+
+resources: {}
+nodeSelector: {}
+tolerations: []
+affinity: {}
