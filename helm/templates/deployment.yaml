@@ -1,32 +1,34 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ include "wordpress.fullname" . }}
+  name: {{ include "app.fullname" . }}
   labels:
-    app: {{ include "wordpress.name" . }}
-    chart: {{ include "wordpress.chart" . }}
+    app: {{ include "app.name" . }}
+    chart: {{ include "app.chart" . }}
     release: {{ .Release.Name }}
     heritage: {{ .Release.Service }}
 spec:
   replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
-      app: {{ include "wordpress.name" . }}
+      app: {{ include "app.name" . }}
       release: {{ .Release.Name }}
   template:
     metadata:
       labels:
-        app: {{ include "wordpress.name" . }}
+        app: {{ include "app.name" . }}
         release: {{ .Release.Name }}
     spec:
-      serviceAccountName: {{ include "wordpress.serviceAccountName" . }}
+      serviceAccountName: {{ include "app.serviceAccountName" . }}
       containers:
-        - name: wordpress
+        - name: app
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
-            - containerPort: 80
+            - containerPort: 3000
               name: http
+          resources:
+            {{- toYaml .Values.resources | nindent 12 }}
       {{- with .Values.imagePullSecrets }}
       imagePullSecrets:
         {{- toYaml . | nindent 8 }}
