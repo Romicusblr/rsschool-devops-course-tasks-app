@@ -9,7 +9,8 @@ pipeline {
             spec:
               containers:
               - name: kaniko
-                image: gcr.io/kaniko-project/executor:latest
+                image: gcr.io/kaniko-project/executor:debug
+                args: ["--dockerfile=Dockerfile", "--context=git://github.com/Romicusblr/rsschool-devops-course-tasks-app.git#refs/heads/task-6", "--context-sub-path=app", "--destination=441592700969.dkr.ecr.us-east-1.amazonaws.com/my-jenkins-app:test", "--oci-layout-path=/kaniko/oci"]
                 volumeMounts:
                 - name: kaniko-secret
                   mountPath: /kaniko/.docker/
@@ -20,44 +21,22 @@ pipeline {
             """
         }
     }
-    environment {
-        // Define environment variables
-        AWS_REGION = 'us-east-1'
-        ECR_REPO = '441592700969.dkr.ecr.us-east-1.amazonaws.com/my-jenkins-app'
-        HELM_RELEASE = 'my-jenkins-app'
-        HELM_CHART_DIR = './my-jenkins-app' // Path to your Helm chart
-        NAMESPACE = 'app'
-        IMAGE_TAG = "${env.BUILD_NUMBER}"
-    }
 
     stages {
-        stage('Checkout') {
+        stage('Logging into AWS ECR') {
             steps {
-                // Clone the repository
-                git branch: 'main', url: 'https://github.com/Romicusblr/rsschool-devops-course-tasks-app'
+                script {
+                    sh """aws ecr get-login-password --region ${AWS_DEFAULT_REGION} | docker login --username AWS --password-stdin ${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com"""
+                }
+                 
             }
         }
-
         stage('Build and Push Docker Image') {
             steps {
-                container('kaniko') {
-                    sh '/kaniko/executor --dockerfile=Dockerfile --context=dir://workspace/app --destination=441592700969.dkr.ecr.us-east-1.amazonaws.com/my-jenkins-app:${BUILD_NUMBER} --oci-layout-path=/kaniko/oci'
-                }
+                echo 'Waiting for 1 minute...'
+                sleep time: 1, unit: 'MINUTES'
             }
         }
-
-        // stage('Deploy with Helm') {
-        //     steps {
-        //         withCredentials([usernamePassword(credentialsId: 'kubeconfig-credentials', usernameVariable: 'KUBECONFIG_USERNAME', passwordVariable: 'KUBECONFIG_PASSWORD')]) {
-        //             sh """
-        //                 helm upgrade --install ${HELM_RELEASE} ${HELM_CHART_DIR} \
-        //                     --namespace ${NAMESPACE} \
-        //                     --set image.repository=${ECR_REPO} \
-        //                     --set image.tag=${env.IMAGE_TAG}
-        //             """
-        //         }
-        //     }
-        // }
     }
 
     post {
