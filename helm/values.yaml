@@ -20,20 +20,6 @@ serviceAccount:
   annotations: {}
   name: ''
 
-# Database configurations
-mariadb:
-  enabled: true
-  persistence:
-    enabled: true
-    storageClass: "local-path"
-    accessMode: ReadWriteOnce
-    size: 1Gi
-  db:
-    name: wordpress
-    user: wordpress
-    password: wordpress_password  # Change this to a secure password
-    rootPassword: root_password  # Change this to a secure password
-
 service:
   type: NodePort
   port: 80
