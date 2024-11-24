@@ -1,15 +1,16 @@
-# Default values for wordpress.
+# Default values for app.
 # This is a YAML-formatted file.
 # Declare variables to be passed into your templates.
 
 replicaCount: 1
 
 image:
-  repository: wordpress
-  pullPolicy: IfNotPresent
+  repository: 441592700969.dkr.ecr.us-east-1.amazonaws.com/my-jenkins-app
+  pullPolicy: Always
   tag: 'latest'  # Set the desired WordPress image tag
 
-imagePullSecrets: []
+imagePullSecrets:
+  - name: ecr-registry
 
 nameOverride: ''
 fullnameOverride: ''
@@ -20,26 +21,19 @@ serviceAccount:
   annotations: {}
   name: ''
 
-# Database configurations
-mariadb:
-  enabled: true
-  persistence:
-    enabled: true
-    storageClass: "local-path"
-    accessMode: ReadWriteOnce
-    size: 1Gi
-  db:
-    name: wordpress
-    user: wordpress
-    password: wordpress_password  # Change this to a secure password
-    rootPassword: root_password  # Change this to a secure password
-
 service:
   type: NodePort
-  port: 80
+  port: 3000
   nodePort: 32000
 
-resources: {}
+resources:
+  limits:
+    cpu: 100m
+    memory: 128Mi
+  requests:
+    cpu: 100m
+    memory: 128Mi
+
 nodeSelector: {}
 tolerations: []
 affinity: {}
